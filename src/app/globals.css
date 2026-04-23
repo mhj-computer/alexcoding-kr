@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Pretendard - 한국어 최고 수준 무료 폰트 */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+
+/* Playfair Display - 영문 디스플레이용 */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+@layer base {
+  :root {
+    --font-feature: 'ss01', 'ss02', 'cv11';
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'ss01', 'ss02';
+  }
+
+  body {
+    @apply bg-paper text-ink antialiased;
+    font-family: 'Pretendard Variable', Pretendard, ui-sans-serif, system-ui, sans-serif;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* 부모 세대가 보기 편한 본문 크기 */
+  body {
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  @media (min-width: 768px) {
+    body {
+      font-size: 17px;
+    }
+  }
+
+  /* 포커스 스타일 - 큰 버튼에 잘 맞는 강조 */
+  *:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(45, 127, 249, 0.35);
+    border-radius: inherit;
+  }
+
+  /* 입력 필드 iOS 줌 방지 */
+  input, select, textarea {
+    font-size: 16px;
+  }
+
+  /* 숫자는 tabular로 (가격, 시간, 연락처 정렬 시 유리) */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* 섹션 세로 리듬 */
+  .section-y {
+    @apply py-16 md:py-24;
+  }
+
+  /* 콘텐츠 최대 폭 */
+  .container-narrow {
+    @apply mx-auto w-full max-w-5xl px-5 sm:px-8;
+  }
+
+  .container-wide {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+  }
+
+  /* 섬세한 하이라이트 - 슬로건 단어 강조용 */
+  .brand-underline {
+    background-image: linear-gradient(to top, rgba(245,158,11,0.25) 38%, transparent 38%);
+    background-repeat: no-repeat;
+    padding: 0 0.1em;
+  }
+
+  /* 배경 그라디언트 장식 */
+  .mesh-light {
+    background-image:
+      radial-gradient(at 12% 18%, rgba(45,127,249,0.08) 0px, transparent 50%),
+      radial-gradient(at 85% 10%, rgba(11,61,92,0.06) 0px, transparent 50%),
+      radial-gradient(at 40% 92%, rgba(245,158,11,0.05) 0px, transparent 50%);
+  }
+
+  /* 미세한 노이즈 텍스처 (너무 매끈한 AI룩 방지) */
+  .texture-grain {
+    position: relative;
+  }
+  .texture-grain::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+  }
+}
+
+@layer utilities {
+  /* 폰트 기본 설정 보조 */
+  .font-display {
+    font-feature-settings: 'lnum', 'ss01';
+  }
+}
