@@ -17,7 +17,7 @@ import { jwtVerify } from 'jose';
 const SESSION_COOKIE = 'session';
 const JWT_ISSUER = 'alexcoding';
 
-const PROTECTED_PREFIXES = ['/booking', '/feedback'];
+const PROTECTED_PREFIXES = ['/feedback'];
 const ADMIN_PREFIXES = ['/admin'];
 
 function matches(pathname: string, prefixes: string[]): boolean {
@@ -63,5 +63,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/booking/:path*', '/feedback/:path*', '/admin/:path*'],
+  matcher: ['/feedback/:path*', '/admin/:path*'],
 };

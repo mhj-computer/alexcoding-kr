@@ -4,7 +4,7 @@ import Link from 'next/link';
  * 메인 페이지의 3개 주요 메뉴 (사양상 필수).
  *
  *  1. 강사 소개 & 커리큘럼 → /about
- *  2. 수업 예약           → /booking
+ *  2. 수업 스케줄          → /booking
  *  3. 학생 피드백          → /feedback
  *
  * 큰 카드형 링크 + 아이콘 + 설명. 부모님이 시력 문제 없이 터치할 수 있는 크기.
@@ -20,8 +20,8 @@ const MENU = [
   {
     href: '/booking',
     eyebrow: '02',
-    title: '수업 예약',
-    desc: '주간 스케줄에서 원하는 시간에 50분 수업을 예약하세요.',
+    title: '수업 스케줄',
+    desc: '진행 중인 정규 수업 시간을 확인하고, 빈 시간에 카톡 상담을 시작하세요.',
     icon: IconCalendar,
   },
   {

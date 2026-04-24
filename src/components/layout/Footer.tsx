@@ -81,7 +81,7 @@ export function Footer() {
               href="/booking"
               className="hover:text-white transition-colors"
             >
-              예약
+              스케줄
             </Link>
             <Link
               href="/feedback"

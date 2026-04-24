@@ -50,7 +50,7 @@ export async function Header() {
             href="/booking"
             className="hover:text-brand-900 transition-colors"
           >
-            수업 예약
+            수업 스케줄
           </Link>
           <Link
             href="/feedback"

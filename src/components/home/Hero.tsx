@@ -58,7 +58,7 @@ export function Hero() {
             href="/booking"
             className="inline-flex items-center justify-center h-14 px-7 rounded-xl bg-white text-brand-900 text-[15px] font-medium border border-paper-border hover:border-brand-300 hover:bg-brand-50 active:scale-[0.98] transition-all"
           >
-            수업 예약하기 →
+            수업 스케줄 보기 →
           </Link>
         </div>
 

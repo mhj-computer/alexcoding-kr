@@ -47,6 +47,15 @@ export interface LoginAttemptRow {
   attempted_at: string;
 }
 
+export interface ScheduleSlotRow {
+  id: string;
+  day_of_week: number;  // 0=월 ~ 6=일
+  hour: number;         // 0~23
+  label: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 // Supabase 클라이언트 제네릭용
 export interface Database {
   public: {
@@ -70,6 +79,11 @@ export interface Database {
         Row: LoginAttemptRow;
         Insert: Omit<LoginAttemptRow, 'id' | 'attempted_at'> & { id?: number; attempted_at?: string };
         Update: Partial<LoginAttemptRow>;
+      };
+      schedule_slots: {
+        Row: ScheduleSlotRow;
+        Insert: Omit<ScheduleSlotRow, 'id' | 'created_at' | 'updated_at'> & { id?: string };
+        Update: Partial<Omit<ScheduleSlotRow, 'id' | 'created_at'>>;
       };
     };
     Enums: {
