@@ -10,138 +10,112 @@
 | 스타일 | Tailwind CSS, Pretendard + Playfair Display |
 | DB / Storage | Supabase (PostgreSQL + Storage) |
 | 인증 | 자체 JWT (jose) + HTTP-only 쿠키 + bcrypt |
-| 배포 | Vercel |
+| 배포 | Vercel + alexcoding.kr |
 
 ## 단계별 구현 로드맵
 
-- [x] **Step 1** — 프로젝트 세팅 + DB 마이그레이션 ← **현재**
-- [ ] Step 2 — 인증 모듈 (회원가입/로그인/세션/미들웨어)
+- [x] **Step 1** — 프로젝트 세팅 + DB 마이그레이션
+- [x] **Step 2** — 인증 모듈 (로그인/세션/관리자 분기/rate limit) ← **현재**
 - [ ] Step 3 — 메인 페이지, 강사 소개, 커리큘럼
 - [ ] Step 4 — 예약 시스템 (주간 스케줄)
-- [ ] Step 5 — 피드백 시스템 (학생 조회 + 관리자 CRUD + 이미지)
+- [ ] Step 5 — 피드백 시스템
 - [ ] Step 6 — 관리자 대시보드 통합
-- [ ] Step 7 — 배포 & 운영 체크리스트
+- [ ] Step 7 — 배포 체크리스트 & 운영 문서
+
+## Step 2 변경 사항
+
+### 정책 결정 반영
+- **공개 회원가입 없음.** 관리자가 사전 등록한 학생만 로그인 가능.
+- 로그인 정보: 학생 **이름 + 생년월일 6자리**.
+- 관리자도 같은 로그인 폼에서 마스터 키(ADMIN_NAME / ADMIN_BIRTH)로 진입.
+
+### 추가된 파일
+```
+src/
+├─ middleware.ts                   # Edge 미들웨어 (라우트 보호)
+├─ app/
+│  ├─ actions/auth.ts              # logoutAction
+│  ├─ login/page.tsx               # 로그인 페이지
+│  ├─ admin/page.tsx               # 임시 관리자 대시보드
+│  └─ api/
+│     ├─ auth/
+│     │  ├─ login/route.ts
+│     │  ├─ logout/route.ts
+│     │  └─ me/route.ts
+│     └─ admin/students/route.ts   # GET/POST 학생 관리
+├─ components/ui/
+│  ├─ Button.tsx, Input.tsx, Label.tsx, FormField.tsx
+└─ lib/auth/
+   ├─ jwt.ts                       # jose JWT 서명/검증
+   ├─ password.ts                  # bcrypt 생일 해싱
+   ├─ admin.ts                     # 관리자 마스터 키 (상수시간 비교)
+   ├─ schema.ts                    # zod 입력 스키마
+   ├─ rate-limit.ts                # 1분/5회 제한
+   └─ session.ts                   # getSession / requireAuth / requireAdmin
+
+scripts/
+└─ add-student.mjs                 # CLI 학생 등록 도구
+```
 
 ## 설치 & 실행
 
-### 1. 의존성 설치
-
 ```bash
 npm install
-```
-
-### 2. Supabase 프로젝트 생성
-
-1. https://supabase.com 가입 → New Project
-2. 리전: `Northeast Asia (Seoul)` 선택
-3. DB 비밀번호 안전하게 저장
-4. 생성 후 Settings → API에서 다음 값 복사:
-   - `Project URL`
-   - `service_role` 키 (⚠️ 절대 외부 공개 금지)
-
-### 3. 환경변수 설정
-
-```bash
-cp .env.local.example .env.local
-```
-
-`.env.local` 열어서:
-
-```bash
-NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=eyJ...
-
-# JWT 시크릿 생성 (터미널에서 실행 후 결과 붙여넣기)
-# node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"
-JWT_SECRET=...
-
-ADMIN_NAME=mhj331212
-ADMIN_BIRTH=iloveyou1!
-
-NEXT_PUBLIC_KAKAO_OPENCHAT=https://open.kakao.com/o/s7DlmJri
-NEXT_PUBLIC_PHONE=010-8637-3734
-```
-
-### 4. DB 마이그레이션 실행
-
-Supabase Studio → SQL Editor → 새 쿼리 → `supabase/migrations/0001_init.sql` 전체 붙여넣고 **Run**.
-
-테이블 4개 (`students`, `bookings`, `feedbacks`, `login_attempts`) 생성 확인.
-
-### 5. Storage 버킷 생성
-
-Supabase Studio → Storage → New bucket:
-- 이름: `feedback-images`, **Private**
-
-### 6. 개발 서버 실행
-
-```bash
 npm run dev
 ```
 
-http://localhost:3000 접속 → "프로젝트 기반이 준비됐습니다" 화면이 뜨면 Step 1 완료.
+`http://localhost:3000` 접속 → "Step 2 Complete" 화면.
 
-## 폴더 구조 (Step 1 기준)
+## 로그인 테스트
 
-```
-coding-tutor/
-├─ .env.local.example
-├─ next.config.mjs
-├─ package.json
-├─ postcss.config.mjs
-├─ tailwind.config.ts
-├─ tsconfig.json
-│
-├─ supabase/
-│  └─ migrations/
-│     └─ 0001_init.sql          # 전체 DB 스키마 + RLS + 인덱스
-│
-├─ public/
-│  └─ images/
-│     └─ instructor.jpg         # 강사 프로필 이미지
-│
-└─ src/
-   ├─ app/
-   │  ├─ layout.tsx              # 루트 레이아웃 + 메타데이터
-   │  ├─ page.tsx                # 메인 (Step 3에서 정교화)
-   │  └─ globals.css             # Tailwind + 폰트 + 컴포넌트 유틸
-   │
-   └─ lib/
-      ├─ utils.ts                # cn, formatPhone, maskName, parentTitle
-      ├─ supabase/
-      │  ├─ server.ts            # service role 클라이언트 (서버 전용)
-      │  └─ types.ts             # DB 타입
-      └─ booking/
-         └─ slots.ts             # 예약 시간 슬롯 규칙 & 유틸
+### 1. 관리자 로그인 (DB 등록 불필요)
+
+`/login` 접속 → 아래 값 입력:
+- 학생 이름: `mhj331212`
+- 생년월일: `iloveyou1!`
+
+→ `/admin` 으로 자동 이동, 임시 대시보드 표시.
+
+### 2. 학생 등록 후 학생 로그인
+
+관리자 UI 완성 전까지는 CLI로 학생 등록:
+
+```bash
+node scripts/add-student.mjs "홍길동" 120331 01012345678 "중2, 수학 강함"
 ```
 
-## 핵심 설계 결정
+인자:
+1. 학생 이름 (2~20자)
+2. 생년월일 6자리 YYMMDD (DB엔 bcrypt 해시만 저장)
+3. 학부모 전화번호 (하이픈 무관)
+4. 관리자 메모 (선택)
 
-### 보안
-- **service_role 키는 서버에서만.** 클라이언트는 Next.js API를 통해서만 DB 접근.
-- **모든 테이블 RLS 활성화 + 정책 없음 = 기본 차단**. service_role만 통과.
-- **생년월일은 bcrypt 해시 저장.** 평문 DB 저장 금지.
-- **로그인 rate limit 기반 테이블** (`login_attempts`) 준비.
+성공 후 `/login` 에서 이름+생일로 로그인 가능.
 
-### 예약 동시성
-- `bookings` 테이블에 **partial unique index**: `(slot_date, slot_start_time) WHERE status='booked'` → 같은 슬롯 중복 예약 DB 레벨 차단.
-- status 취소/완료 시에도 해당 슬롯 재예약 가능 (과거 히스토리 보존).
+## 보안 체크리스트
 
-### 시간대 규칙
-- **평일 (월~금)**: 16, 17, 18, 19, 20, 21시 시작 (6개 슬롯)
-- **주말 (토~일)**: 08, 09, ..., 21시 시작 (14개 슬롯)
-- 각 50분 수업
-- DB `CHECK` 제약 + 앱 레이어 검증 이중 방어
+- [x] service_role 키는 서버 전용 (`'server-only'` import로 클라이언트 차단)
+- [x] 생년월일은 bcrypt 해시로만 DB 저장
+- [x] JWT HS256 서명, HTTP-only + SameSite=Lax + Secure(프로덕션)
+- [x] 관리자 마스터 키는 env로만, DB 저장 안 함, 상수시간 비교
+- [x] 로그인 rate limit (같은 IP+이름 1분/5회)
+- [x] 학생 존재 여부를 드러내지 않는 공통 에러 메시지
+- [x] RLS 활성화 + policy 없음 → anon/authenticated DB 차단
+- [x] 보안 헤더 (X-Frame-Options, X-Content-Type-Options, Referrer-Policy)
 
-### 취소 정책
-- **학생/학부모는 직접 취소 불가.** UI에 취소 버튼 없음.
-- 수업 전날까지 카톡/전화로 강사에게 연락 → 관리자가 DB에서 변경.
+## 알려진 한계 (이름+생일 인증)
+
+본질적 약점:
+- 타인이 이름/생일을 알면 로그인 가능 (학교 친구 등)
+- 완화책: 관리자 사전 등록 필수, rate limit
+
+추후 보안 강화 옵션:
+- 학부모 전화번호를 3번째 요소로 추가 (2FA 흉내)
+- 또는 4자리 PIN을 관리자가 학생에게 전달하는 방식
 
 ## 다음 단계
 
-Step 1이 정상 작동하는 것(`npm run dev`로 화면이 뜨는 것)이 확인되면 **Step 2 (인증 모듈)** 을 요청해주세요.
-Step 2에서 구현할 내용:
-- `src/lib/auth/` : JWT, 세션, 비밀번호 해싱, 관리자 판별
-- `src/middleware.ts` : 라우트 보호
-- `/api/auth/signup`, `/api/auth/login`, `/api/auth/logout`, `/api/auth/me`
-- `/signup`, `/login` 페이지 (부모님이 이용하기 쉬운 큰 폼)
+Step 2 정상 작동 확인되면 Step 3 요청:
+- 메인 페이지 (슬로건 + 메뉴 3개 + 연락처 푸터)
+- 강사 소개 페이지 (프로필 + 경력 카드 + 철학 + 커리큘럼 4종)
+- 모바일 반응형 전체 점검

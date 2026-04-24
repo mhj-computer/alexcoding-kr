@@ -1,30 +1,65 @@
+import Link from 'next/link';
+import { getSession } from '@/lib/auth/session';
+import { parentTitle } from '@/lib/utils';
+import { logoutAction } from './actions/auth';
+
 /**
- * Step 1 임시 메인 페이지.
- * Step 3에서 Hero, MenuCards, Footer 등을 포함한 정식 메인 페이지로 교체된다.
+ * Step 2 메인 페이지.
+ * Step 3에서 Hero + Menu 카드 + Footer 가 포함된 정식 메인으로 재설계됨.
  */
-export default function HomePage() {
+export default async function HomePage() {
+  const session = await getSession();
+
   return (
-    <main className="flex-1 flex items-center justify-center px-5 py-24">
+    <main className="flex-1 flex items-center justify-center px-5 py-20 mesh-light">
       <div className="max-w-2xl text-center">
         <p className="font-display italic text-brand-500 text-sm tracking-[0.2em] uppercase mb-4">
-          Setup Complete
+          Step 2 Complete
         </p>
         <h1 className="font-display text-display-lg text-brand-900 mb-6">
-          프로젝트 기반이 준비됐습니다
+          인증 시스템이 준비됐습니다
         </h1>
         <p className="text-ink-muted leading-relaxed mb-8">
-          Next.js 14, Tailwind, Supabase 스키마가 세팅됐습니다. <br />
-          다음 단계: <strong className="text-brand-900">인증 모듈</strong>을 구현합니다.
+          로그인, 세션 관리, 관리자 분기, rate limit 이 모두 동작합니다.
         </p>
-        <div className="inline-flex flex-col gap-3 px-6 py-5 rounded-2xl bg-brand-50 border border-brand-100 text-left text-sm">
-          <p className="font-medium text-brand-900">확인 체크리스트</p>
-          <ul className="space-y-1 text-ink-muted tabular">
-            <li>✓ Next.js 개발 서버 정상 동작</li>
-            <li>✓ Pretendard / Playfair Display 폰트 로드</li>
-            <li>✓ Tailwind 색상 토큰 적용</li>
-            <li className="text-ink-soft">→ Supabase 프로젝트 연결 & 마이그레이션 실행 필요</li>
-          </ul>
-        </div>
+
+        {session ? (
+          <div className="inline-flex flex-col gap-3 px-6 py-5 rounded-2xl bg-brand-50 border border-brand-100 text-left">
+            <p className="text-sm text-brand-900">
+              <strong className="font-medium">
+                {session.role === 'admin' ? '관리자' : parentTitle(session.name)}
+              </strong>{' '}
+              환영합니다.
+            </p>
+            <div className="flex gap-2">
+              {session.role === 'admin' && (
+                <Link
+                  href="/admin"
+                  className="inline-flex items-center h-10 px-4 rounded-lg bg-brand-900 text-white text-sm font-medium hover:bg-brand-800"
+                >
+                  관리자 페이지
+                </Link>
+              )}
+              <form action={logoutAction}>
+                <button
+                  type="submit"
+                  className="h-10 px-4 rounded-lg border border-paper-border text-sm font-medium text-ink-muted hover:bg-paper-subtle"
+                >
+                  로그아웃
+                </button>
+              </form>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center h-14 px-8 rounded-xl bg-brand-900 text-white font-medium hover:bg-brand-800 shadow-card"
+            >
+              로그인
+            </Link>
+          </div>
+        )}
       </div>
     </main>
   );
