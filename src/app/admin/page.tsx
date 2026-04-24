@@ -16,7 +16,7 @@ export default async function AdminTempPage() {
     .select('id', { count: 'exact', head: true });
 
   return (
-    <main className="flex-1 px-5 py-16 md:py-24 mesh-light">
+    <section className="flex-1 px-5 py-16 md:py-24 mesh-light">
       <div className="mx-auto max-w-2xl">
         <div className="mb-8 flex items-center justify-between gap-4">
           <div>
@@ -81,6 +81,6 @@ export default async function AdminTempPage() {
           </Link>
         </p>
       </div>
-    </main>
+    </section>
   );
 }

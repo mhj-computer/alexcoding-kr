@@ -1,6 +1,7 @@
-# 코딩 과외 예약 시스템
+# AlexCoding
 
 1:1 코딩 과외 강사와 학부모/학생을 잇는 예약·피드백 웹서비스.
+도메인: https://alexcoding.kr
 
 ## 기술 스택
 
@@ -15,47 +16,44 @@
 ## 단계별 구현 로드맵
 
 - [x] **Step 1** — 프로젝트 세팅 + DB 마이그레이션
-- [x] **Step 2** — 인증 모듈 (로그인/세션/관리자 분기/rate limit) ← **현재**
-- [ ] Step 3 — 메인 페이지, 강사 소개, 커리큘럼
+- [x] **Step 2** — 인증 모듈 (로그인/세션/관리자 분기/rate limit)
+- [x] **Step 3** — 메인 페이지 + 강사 소개 + 커리큘럼 ← **현재**
 - [ ] Step 4 — 예약 시스템 (주간 스케줄)
 - [ ] Step 5 — 피드백 시스템
 - [ ] Step 6 — 관리자 대시보드 통합
 - [ ] Step 7 — 배포 체크리스트 & 운영 문서
 
-## Step 2 변경 사항
+## Step 3 변경 사항
 
-### 정책 결정 반영
-- **공개 회원가입 없음.** 관리자가 사전 등록한 학생만 로그인 가능.
-- 로그인 정보: 학생 **이름 + 생년월일 6자리**.
-- 관리자도 같은 로그인 폼에서 마스터 키(ADMIN_NAME / ADMIN_BIRTH)로 진입.
+### 신규 페이지
+- `/` — 메인 페이지: Hero → Trust Strip → Menu Cards → Approach Preview → Footer
+- `/about` — 강사 소개 & 커리큘럼 (프로필 + 경력 타임라인 + 커리큘럼 3종)
+- `/booking` — Coming Soon 플레이스홀더 (Step 4에서 구현)
+- `/feedback` — Coming Soon 플레이스홀더 (Step 5에서 구현)
 
-### 추가된 파일
+### 신규 컴포넌트
 ```
-src/
-├─ middleware.ts                   # Edge 미들웨어 (라우트 보호)
-├─ app/
-│  ├─ actions/auth.ts              # logoutAction
-│  ├─ login/page.tsx               # 로그인 페이지
-│  ├─ admin/page.tsx               # 임시 관리자 대시보드
-│  └─ api/
-│     ├─ auth/
-│     │  ├─ login/route.ts
-│     │  ├─ logout/route.ts
-│     │  └─ me/route.ts
-│     └─ admin/students/route.ts   # GET/POST 학생 관리
-├─ components/ui/
-│  ├─ Button.tsx, Input.tsx, Label.tsx, FormField.tsx
-└─ lib/auth/
-   ├─ jwt.ts                       # jose JWT 서명/검증
-   ├─ password.ts                  # bcrypt 생일 해싱
-   ├─ admin.ts                     # 관리자 마스터 키 (상수시간 비교)
-   ├─ schema.ts                    # zod 입력 스키마
-   ├─ rate-limit.ts                # 1분/5회 제한
-   └─ session.ts                   # getSession / requireAuth / requireAdmin
-
-scripts/
-└─ add-student.mjs                 # CLI 학생 등록 도구
+src/components/
+├─ layout/
+│  ├─ Header.tsx              # 로고 + 네비 + 로그인 상태
+│  └─ Footer.tsx              # 카톡/전화 CTA + 크레딧
+├─ home/
+│  ├─ Hero.tsx                # 슬로건 "배우는 것이 아닌 만드는 경험으로"
+│  ├─ TrustStrip.tsx          # 5,000회 / 6년 / 3→1 / 30+ 숫자 임팩트
+│  ├─ MenuCards.tsx           # 3개 주요 메뉴 카드
+│  └─ ApproachPreview.tsx     # 프로젝트 기반 + AI 활용 철학
+└─ about/
+   ├─ AboutHero.tsx           # 프로필 사진 + 소개문
+   ├─ CareerTimeline.tsx      # 2020~2025 경력 12개
+   └─ CurriculumSection.tsx   # 3개 트랙 (포트폴리오/프로그래밍/게임)
 ```
+
+### 디자인 포인트
+- **Editorial Tech 컨셉** — Playfair Display italic으로 강조어, 넉넉한 여백
+- **색상 리듬** — 섹션마다 배경 톤 변화 (mesh → brand-950 → paper → white)
+- **amber 포인트** — 키 문구 밑줄 + 어두운 섹션 eyebrow 라벨에만 제한적 사용
+- **학부모 친화** — 모든 터치 영역 48px 이상, 본문 16~17px, 포커스 링 명확
+- **타이포 중심** — 이미지 리소스 부족을 강한 타이포그래피로 보완
 
 ## 설치 & 실행
 
@@ -64,58 +62,41 @@ npm install
 npm run dev
 ```
 
-`http://localhost:3000` 접속 → "Step 2 Complete" 화면.
+http://localhost:3000 접속 → 새로운 메인 페이지 확인.
+
+주요 URL:
+- `/` — 메인
+- `/about` — 강사 소개 & 커리큘럼
+- `/login` — 로그인
+- `/admin` — 관리자 (로그인 필요)
 
 ## 로그인 테스트
 
-### 1. 관리자 로그인 (DB 등록 불필요)
+### 관리자
+- 이름: `mhj331212`
+- 생일: `iloveyou1!`
 
-`/login` 접속 → 아래 값 입력:
-- 학생 이름: `mhj331212`
-- 생년월일: `iloveyou1!`
-
-→ `/admin` 으로 자동 이동, 임시 대시보드 표시.
-
-### 2. 학생 등록 후 학생 로그인
-
-관리자 UI 완성 전까지는 CLI로 학생 등록:
-
+### 학생 (CLI로 등록 후)
 ```bash
-node scripts/add-student.mjs "홍길동" 120331 01012345678 "중2, 수학 강함"
+node scripts/add-student.mjs "홍길동" 120331 01012345678 "메모(선택)"
 ```
 
-인자:
-1. 학생 이름 (2~20자)
-2. 생년월일 6자리 YYMMDD (DB엔 bcrypt 해시만 저장)
-3. 학부모 전화번호 (하이픈 무관)
-4. 관리자 메모 (선택)
+## Vercel 배포
 
-성공 후 `/login` 에서 이름+생일로 로그인 가능.
+```bash
+git add .
+git commit -m "Step 3: marketing pages"
+git push
+```
 
-## 보안 체크리스트
-
-- [x] service_role 키는 서버 전용 (`'server-only'` import로 클라이언트 차단)
-- [x] 생년월일은 bcrypt 해시로만 DB 저장
-- [x] JWT HS256 서명, HTTP-only + SameSite=Lax + Secure(프로덕션)
-- [x] 관리자 마스터 키는 env로만, DB 저장 안 함, 상수시간 비교
-- [x] 로그인 rate limit (같은 IP+이름 1분/5회)
-- [x] 학생 존재 여부를 드러내지 않는 공통 에러 메시지
-- [x] RLS 활성화 + policy 없음 → anon/authenticated DB 차단
-- [x] 보안 헤더 (X-Frame-Options, X-Content-Type-Options, Referrer-Policy)
-
-## 알려진 한계 (이름+생일 인증)
-
-본질적 약점:
-- 타인이 이름/생일을 알면 로그인 가능 (학교 친구 등)
-- 완화책: 관리자 사전 등록 필수, rate limit
-
-추후 보안 강화 옵션:
-- 학부모 전화번호를 3번째 요소로 추가 (2FA 흉내)
-- 또는 4자리 PIN을 관리자가 학생에게 전달하는 방식
+약 2분 후 https://alexcoding.kr 에 반영.
 
 ## 다음 단계
 
-Step 2 정상 작동 확인되면 Step 3 요청:
-- 메인 페이지 (슬로건 + 메뉴 3개 + 연락처 푸터)
-- 강사 소개 페이지 (프로필 + 경력 카드 + 철학 + 커리큘럼 4종)
-- 모바일 반응형 전체 점검
+Step 3 정상 작동 확인되면 **Step 4 진행** 이라고 답해주세요.
+
+Step 4 범위:
+- 주간 스케줄 UI (월~일, 평일 6슬롯/주말 14슬롯)
+- 학생: 예약 생성 (직접 취소는 불가, 전날까지 카톡 연락)
+- 관리자: 예약 추가/변경/삭제
+- 동시 예약 race condition 방지 (DB partial unique index 활용)

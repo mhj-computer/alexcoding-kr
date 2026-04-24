@@ -66,14 +66,15 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex-1 flex items-center justify-center px-5 py-16 md:py-24 mesh-light">
+    <section className="flex-1 flex items-center justify-center px-5 py-16 md:py-24 mesh-light">
       <div className="w-full max-w-md">
         <div className="mb-10 text-center">
           <Link
             href="/"
-            className="inline-block font-display italic text-brand-700 text-sm tracking-[0.2em] uppercase mb-3 hover:text-brand-900 transition-colors"
+            className="inline-flex items-baseline gap-0.5 mb-4 hover:opacity-80 transition-opacity"
           >
-            Alex Coding
+            <span className="font-display text-[22px] font-medium text-brand-900">Alex</span>
+            <span className="font-display text-[22px] italic font-medium text-brand-500">coding</span>
           </Link>
           <h1 className="font-display text-display-md text-brand-900 mb-2">
             로그인
@@ -153,6 +154,6 @@ export default function LoginPage() {
           </a>
         </p>
       </div>
-    </main>
+    </section>
   );
 }
