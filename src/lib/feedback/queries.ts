@@ -26,7 +26,8 @@ export async function fetchStudentFeedbacks(studentId: string): Promise<Feedback
     .from('feedbacks')
     .select('id, student_id, content, image_urls, created_at, updated_at')
     .eq('student_id', studentId)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .returns<FeedbackRow[]>();
 
   if (error) {
     console.error('[fetchStudentFeedbacks]', error.message);

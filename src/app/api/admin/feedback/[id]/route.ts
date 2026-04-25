@@ -50,7 +50,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       .from('feedbacks')
       .select('image_urls')
       .eq('id', params.id)
-      .maybeSingle();
+      .maybeSingle<{ image_urls: string[] }>();
 
     if (prev?.image_urls) {
       const newPaths = new Set(
@@ -96,7 +96,7 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
     .from('feedbacks')
     .select('image_urls')
     .eq('id', params.id)
-    .maybeSingle();
+    .maybeSingle<{ image_urls: string[] }>();
 
   const { error } = await supabase.from('feedbacks').delete().eq('id', params.id);
 

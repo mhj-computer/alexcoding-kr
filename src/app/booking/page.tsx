@@ -21,7 +21,8 @@ export default async function ScheduleViewPage() {
     .from('schedule_slots')
     .select('id, day_of_week, hour, label')
     .order('day_of_week', { ascending: true })
-    .order('hour', { ascending: true });
+    .order('hour', { ascending: true })
+    .returns<{ id: string; day_of_week: number; hour: number; label: string | null }[]>();
 
   return (
     <section className="flex-1 bg-paper">

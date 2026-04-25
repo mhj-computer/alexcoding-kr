@@ -26,9 +26,16 @@ export default async function AdminStudentFeedbackPage({ params }: Props) {
     .from('students')
     .select('id, name, parent_phone, profile_note')
     .eq('id', params.studentId)
-    .maybeSingle();
+    .maybeSingle<{
+      id: string;
+      name: string;
+      parent_phone: string;
+      profile_note: string | null;
+    }>();
 
-  if (!student) notFound();
+  if (!student) {
+    notFound();
+  }
 
   return (
     <section className="flex-1 bg-paper">

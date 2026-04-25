@@ -16,7 +16,8 @@ export default async function AdminFeedbackListPage() {
   const { data: students } = await supabase
     .from('students')
     .select('id, name, parent_phone')
-    .order('name', { ascending: true });
+    .order('name', { ascending: true })
+    .returns<{ id: string; name: string; parent_phone: string }[]>();
 
   const studentList = students ?? [];
 

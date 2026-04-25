@@ -68,7 +68,8 @@ export async function POST(req: NextRequest) {
   const { data: students, error } = await supabase
     .from('students')
     .select('id, name, birthdate_hash')
-    .eq('name', name);
+    .eq('name', name)
+    .returns<{ id: string; name: string; birthdate_hash: string }[]>();
 
   if (error) {
     console.error('[login] DB error:', error.message);
