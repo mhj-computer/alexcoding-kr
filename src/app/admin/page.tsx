@@ -50,6 +50,12 @@ export default async function AdminDashboardPage() {
             desc="공개 페이지에 표시되는 정규 수업 스케줄을 관리합니다. 학부모 문의 채널의 핵심 정보입니다."
           />
           <AdminActionCard
+            href="/admin/feedback"
+            eyebrow="Feedback"
+            title="피드백 관리"
+            desc="학생을 선택해 매 수업 후 피드백을 작성하거나, 기존 피드백을 수정·삭제합니다."
+          />
+          <AdminActionCard
             href="#"
             eyebrow="Students (준비중)"
             title="학생 관리"
